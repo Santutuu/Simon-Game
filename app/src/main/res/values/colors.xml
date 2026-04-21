@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="bg_main">#000000</color>
+    <color name="text_yellow">#FFEB3B</color>
+    <color name="bright_yellow">#FFFF00</color>
+    <color name="mode_green">#4CAF50</color>
+    <color name="mode_yellow">#FFC107</color>
+    <color name="mode_orange">#D84315</color>
+    <color name="mode_purple">#9C27B0</color>
+    <color name="mode_pink">#E91E63</color>
+    <color name="mode_btn_bg">#1A1A1A</color>
+    <color name="mode_btn_selected">#332E00</color>
+    <color name="btn_purple">#7B1FA2</color>
+    <color name="btn_icon_bg">#D4C92B</color>
+
+    <color name="primary_purple">#6200EE</color>
+    <color name="secondary_purple">#BB86FC</color>
+    <color name="cell_bg">#F5F5F5</color>
+    <color name="cell_stroke">#E0E0E0</color>
+    <color name="player_x">#E91E63</color>
+    <color name="player_o">#2196F3</color>
+    <color name="background_soft">#FAFAFA</color>
+</resources>

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="28dp">
+
+        <!-- Header: Grande y prolijo -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="52dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btnBackHome"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_home"
+                app:tint="@color/white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:text="Ajustes"
+                android:textColor="@color/white"
+                android:textSize="44sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Section: Nombre Usuario (Editable) -->
+        <EditText
+            android:id="@+id/etUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:hint="SANTINO"
+            android:inputType="textCapCharacters"
+            android:padding="0dp"
+            android:text="SANTINO"
+            android:textColor="@color/white"
+            android:textColorHint="#44FFFFFF"
+            android:textSize="40sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="NOMBRE USUARIO"
+            android:textColor="@color/text_yellow"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.05" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="48dp"
+            android:background="@color/text_yellow" />
+
+        <!-- Section: Tiempo Máximo Reacción (Rango 10-30s) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btnTimeMinus"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_arrow_left"
+                app:tint="@color/white" />
+
+            <TextView
+                android:id="@+id/txtTimeValue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="30s"
+                android:textColor="@color/white"
+                android:textSize="48sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/btnTimePlus"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_arrow_right"
+                app:tint="@color/white" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="4dp"
+            android:text="TIEMPO MÁXIMO REACCIÓN"
+            android:textColor="@color/text_yellow"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.05" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="48dp"
+            android:background="@color/text_yellow" />
+
+        <!-- Section: Tablero Preferido -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btnBoardPrev"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_arrow_left"
+                app:tint="@color/white" />
+
+            <GridLayout
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:layout_marginHorizontal="28dp"
+                android:columnCount="2"
+                android:rowCount="2">
+
+                <View
+                    android:layout_width="86dp"
+                    android:layout_height="86dp"
+                    android:layout_margin="2dp"
+                    android:background="@color/white" />
+
+                <View
+                    android:layout_width="86dp"
+                    android:layout_height="86dp"
+                    android:layout_margin="2dp"
+                    android:background="@color/mode_purple" />
+
+                <View
+                    android:layout_width="86dp"
+                    android:layout_height="86dp"
+                    android:layout_margin="2dp"
+                    android:background="@color/mode_yellow" />
+
+                <View
+                    android:layout_width="86dp"
+                    android:layout_height="86dp"
+                    android:layout_margin="2dp"
+                    android:background="@color/white" />
+            </GridLayout>
+
+            <ImageButton
+                android:id="@+id/btnBoardNext"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_arrow_right"
+                app:tint="@color/white" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="12dp"
+            android:text="TABLERO PREFERIDO"
+            android:textColor="@color/text_yellow"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.05" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/text_yellow" />
+
+    </LinearLayout>
+</ScrollView>

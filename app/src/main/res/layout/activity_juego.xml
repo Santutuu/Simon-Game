@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:padding="16dp"
+    tools:context=".JuegoActivity">
+
+    <!-- Botón Home arriba a la izquierda -->
+    <ImageButton
+        android:id="@+id/btnHome"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_home"
+        android:contentDescription="Inicio"
+        app:tint="#F4E04D" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <!-- Agrupamos el score para que se vea prolijo -->
+        <TextView
+            android:id="@+id/txtTituloPuntaje"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Ultimo Score"
+            android:textColor="#F4E04D"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtPuntaje"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="12"
+            android:textColor="#F4E04D"
+            android:textSize="48sp"
+            android:textStyle="bold" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="40dp" />
+
+        <GridLayout
+            android:id="@+id/gridSimon"
+            android:layout_width="320dp"
+            android:layout_height="320dp"
+            android:layout_gravity="center_horizontal"
+            android:background="#000000"
+            android:columnCount="2"
+            android:rowCount="2">
+
+            <View
+                android:id="@+id/cuadro1"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:background="#2ECC71" />
+
+            <View
+                android:id="@+id/cuadro2"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:background="#E74C3C" />
+
+            <View
+                android:id="@+id/cuadro3"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:background="#F1C40F" />
+
+            <View
+                android:id="@+id/cuadro4"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_margin="4dp"
+                android:background="#3498DB" />
+        </GridLayout>
+
+        <LinearLayout
+            android:id="@+id/barraTiempoFondo"
+            android:layout_width="300dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/bg_barra_tiempo_fondo"
+            android:orientation="horizontal"
+            android:padding="2dp">
+
+            <View
+                android:id="@+id/barraTiempoProgreso"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.65"
+                android:background="@drawable/bg_barra_tiempo_progreso" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.35"
+                android:background="@android:color/transparent" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnPlay"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="24dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="Empezar juego"
+            android:src="@android:drawable/ic_media_play"
+            android:tint="#F4E04D" />
+
+    </LinearLayout>
+
+</RelativeLayout>

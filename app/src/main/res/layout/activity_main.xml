@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_main"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- Encabezado con Nombre y Ajustes -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp">
+
+        <TextView
+            android:id="@+id/txtNombreUsuario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Santino"
+            android:textColor="@color/text_yellow"
+            android:textSize="34sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/btnSettings"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_settings"
+            app:tint="@color/text_yellow" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="Elegir modo"
+        android:textColor="@color/text_yellow"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <!-- Lista de Modos -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Fácil -->
+        <LinearLayout
+            android:id="@+id/layoutFacil"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_modo_boton"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_diamond"
+                app:tint="@color/mode_green" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:text="Facil"
+                android:textColor="@color/text_yellow"
+                android:textSize="19sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Medio (Seleccionado) -->
+        <LinearLayout
+            android:id="@+id/layoutMedio"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_modo_selected"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_diamond"
+                app:tint="@color/mode_yellow" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:text="Medio"
+                android:textColor="@color/text_yellow"
+                android:textSize="19sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Difícil -->
+        <LinearLayout
+            android:id="@+id/layoutDificil"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_modo_boton"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_diamond"
+                app:tint="@color/mode_orange" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:text="Dificil"
+                android:textColor="@color/text_yellow"
+                android:textSize="19sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Entrenamiento -->
+        <LinearLayout
+            android:id="@+id/layoutEntrenamiento"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_modo_boton"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_diamond"
+                app:tint="@color/mode_purple" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:text="Entrenamiento"
+                android:textColor="@color/text_yellow"
+                android:textSize="19sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Inverso -->
+        <LinearLayout
+            android:id="@+id/layoutInverso"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@drawable/bg_modo_boton"
+            android:gravity="center_vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="16dp">
+
+            <FrameLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_circulo_resultado"
+                    android:backgroundTint="@color/mode_pink" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="NEW!"
+                    android:textColor="@color/white"
+                    android:textSize="9sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="Inverso"
+                android:textColor="@color/text_yellow"
+                android:textSize="19sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- Botones de Acción Modernos -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginBottom="24dp">
+
+        <ImageButton
+            android:id="@+id/btnTrophy"
+            android:layout_width="64dp"
+            android:layout_height="56dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/bg_modo_boton"
+            android:backgroundTint="@color/btn_icon_bg"
+            android:elevation="4dp"
+            android:src="@drawable/ic_trophy"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            app:tint="@color/black" />
+
+        <ImageButton
+            android:id="@+id/btnStats"
+            android:layout_width="64dp"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_modo_boton"
+            android:backgroundTint="@color/btn_icon_bg"
+            android:elevation="4dp"
+            android:src="@drawable/ic_stats"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            app:tint="@color/black" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnComenzarJuego"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:background="@drawable/bg_boton_comenzar"
+        android:elevation="6dp"
+        android:text="Comenzar juego!"
+        android:textAllCaps="false"
+        android:textColor="@color/text_yellow"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
+</LinearLayout>
