@@ -11,9 +11,13 @@ import android.os.Looper;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.GridLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 public class JuegoActivity extends AppCompatActivity {
@@ -43,19 +48,43 @@ public class JuegoActivity extends AppCompatActivity {
     private Button btnSiguienteEtapa;
     private TextView txtPuntaje, txtIndicadorColor;
     private View barraTiempoProgreso;
+
+    // Sistema de Pantallas de Mensaje y Stats
+    private View layoutOverlayMensaje;
+    private TextView txtMensajeTitulo, txtMensajeDescripcion;
+    private ImageView imgIconoMensaje;
+    private Button btnEntendido;
+    private FrameLayout contenedorEstadisticas;
+    private TextView txtStatReaccion, txtStatPorcentaje;
+
+    // Sistema de Vidas
+    private LinearLayout layoutVidas;
+    public static int vidasRestantes = 0; 
+
+    // Métricas
+    private final List<Long> tiemposReaccion = new ArrayList<>();
+    private long momentoInicioEstimulo = 0;
+
+    // Elementos Nivel 2: Cinta de Cine
+    private HorizontalScrollView scrollSecuencia;
+    private LinearLayout contenedorCintaCine;
+    private final List<Integer> secuenciaNumeros = new ArrayList<>();
+    private final List<Integer> numerosEnGrilla = new ArrayList<>();
+    private int indiceActualSecuencia = 0;
+
+    // Elementos Carrera (Nivel 3)
+    private View contenedorCarrera, pelotaCarrera;
+    private int progresoCarrera = 0;
+    private int colorObjetivoCarrera = -1;
+    private final Handler handlerCarrera = new Handler(Looper.getMainLooper());
+    private Runnable runnableTimeoutCarrera;
     
     // Configuración dinámica
     private int iteracionesParaGanar = 20;
     private long tiempoConfiguradoIntent = 0;
 
-    // Elementos para Nivel 2
+    // Elementos para Niveles Simon
     private GridLayout gridSimon, gridNumeros;
-    private LinearLayout contenedorSecuencia, filaSecuencia1, filaSecuencia2;
-    private final List<Integer> secuenciaNumeros = new ArrayList<>();
-    private final List<Integer> numerosEnGrilla = new ArrayList<>();
-    private int indiceActualSecuencia = 0;
-
-    // Elementos para Nivel 1 y 3 (Simon)
     private final List<Integer> secuenciaSimon = new ArrayList<>();
     private final List<Integer> entradaJugadorSimon = new ArrayList<>();
     private int puntajeTotalSimon = 0;
@@ -82,6 +111,9 @@ public class JuegoActivity extends AppCompatActivity {
         recibirConfiguracion();
         configurarDificultad();
         configurarListeners();
+        actualizarInterfazVidas();
+
+        mostrarPantallaIntro();
     }
 
     private void vincularVistas() {
@@ -99,11 +131,87 @@ public class JuegoActivity extends AppCompatActivity {
         txtIndicadorColor = findViewById(R.id.txtIndicadorColor);
         barraTiempoProgreso = findViewById(R.id.barraTiempoProgreso);
         
+        layoutVidas = findViewById(R.id.layoutVidas);
+        scrollSecuencia = findViewById(R.id.scrollSecuencia);
+        contenedorCintaCine = findViewById(R.id.contenedorCintaCine);
+        contenedorCarrera = findViewById(R.id.contenedorCarrera);
+        pelotaCarrera = findViewById(R.id.pelotaCarrera);
         gridSimon = findViewById(R.id.gridSimon);
         gridNumeros = findViewById(R.id.gridNumeros);
-        contenedorSecuencia = findViewById(R.id.contenedorSecuencia);
-        filaSecuencia1 = findViewById(R.id.filaSecuencia1);
-        filaSecuencia2 = findViewById(R.id.filaSecuencia2);
+
+        layoutOverlayMensaje = getLayoutInflater().inflate(R.layout.layout_mensaje_nivel, null);
+        addContentView(layoutOverlayMensaje, new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+        layoutOverlayMensaje.setVisibility(View.GONE);
+
+        txtMensajeTitulo = layoutOverlayMensaje.findViewById(R.id.txtMensajeTitulo);
+        txtMensajeDescripcion = layoutOverlayMensaje.findViewById(R.id.txtMensajeDescripcion);
+        imgIconoMensaje = layoutOverlayMensaje.findViewById(R.id.imgIconoMensaje);
+        btnEntendido = layoutOverlayMensaje.findViewById(R.id.btnEntendido);
+        contenedorEstadisticas = layoutOverlayMensaje.findViewById(R.id.contenedorEstadisticas);
+        txtStatReaccion = layoutOverlayMensaje.findViewById(R.id.txtStatReaccion);
+        txtStatPorcentaje = layoutOverlayMensaje.findViewById(R.id.txtStatPorcentaje);
+    }
+
+    private void mostrarPantallaIntro() {
+        layoutOverlayMensaje.setVisibility(View.VISIBLE);
+        imgIconoMensaje.setVisibility(View.GONE);
+        contenedorEstadisticas.setVisibility(View.GONE);
+        btnEntendido.setText("¡EMPEZAR!");
+
+        if (dificultadActual == Dificultad.FACIL) {
+            txtMensajeTitulo.setText("NIVEL 1: SIMON");
+            txtMensajeDescripcion.setText("Memoriza la secuencia de colores que parpadean.");
+        } else if (dificultadActual == Dificultad.MEDIO) {
+            txtMensajeTitulo.setText("NIVEL 2: NÚMEROS");
+            txtMensajeDescripcion.setText("Toca los números en el orden que muestra la cinta de cine.");
+        } else if (dificultadActual == Dificultad.DIFICIL) {
+            txtMensajeTitulo.setText("NIVEL 3: REACCIÓN");
+            txtMensajeDescripcion.setText("¡Rápido! Toca el color de la TINTA de la palabra.");
+        }
+
+        btnEntendido.setOnClickListener(v -> {
+            layoutOverlayMensaje.setVisibility(View.GONE);
+            iniciarJuego();
+        });
+    }
+
+    private void mostrarPantallaVictoriaVida() {
+        layoutOverlayMensaje.setVisibility(View.VISIBLE);
+        contenedorEstadisticas.setVisibility(View.GONE);
+        txtMensajeTitulo.setText("¡NIVEL SUPERADO!");
+        txtMensajeDescripcion.setText("¡Excelente trabajo! Has ganado un corazón extra.");
+        imgIconoMensaje.setVisibility(View.VISIBLE);
+        imgIconoMensaje.setImageResource(android.R.drawable.btn_star_big_on);
+        imgIconoMensaje.setColorFilter(Color.RED);
+        btnEntendido.setText("VOLVER AL MENÚ");
+        btnEntendido.setOnClickListener(v -> finish());
+    }
+
+    private void mostrarPantallaPerderStats() {
+        layoutOverlayMensaje.setVisibility(View.VISIBLE);
+        imgIconoMensaje.setVisibility(View.GONE);
+        txtMensajeTitulo.setText("GAME OVER");
+        txtMensajeDescripcion.setText("¡No te rindas! Aquí están tus resultados:");
+        
+        contenedorEstadisticas.setVisibility(View.VISIBLE);
+        
+        // Calcular promedio
+        long suma = 0;
+        for (Long t : tiemposReaccion) suma += t;
+        double promedio = tiemposReaccion.isEmpty() ? 0 : (suma / (double) tiemposReaccion.size()) / 1000.0;
+        txtStatReaccion.setText(String.format(Locale.getDefault(), "%.1fs", promedio));
+
+        // Calcular porcentaje
+        int porcentaje = 0;
+        if (dificultadActual == Dificultad.FACIL) porcentaje = (puntajeTotalSimon * 100) / iteracionesParaGanar;
+        else if (dificultadActual == Dificultad.MEDIO) porcentaje = (indiceActualSecuencia * 100) / iteracionesParaGanar;
+        else if (dificultadActual == Dificultad.DIFICIL) porcentaje = (progresoCarrera * 100) / iteracionesParaGanar;
+        
+        txtStatPorcentaje.setText(String.format(Locale.getDefault(), "%d%%", porcentaje));
+
+        btnEntendido.setText("VOLVER AL MENÚ");
+        btnEntendido.setOnClickListener(v -> finish());
     }
 
     private void recibirConfiguracion() {
@@ -121,19 +229,22 @@ public class JuegoActivity extends AppCompatActivity {
         if (dificultadActual == Dificultad.MEDIO) {
             gridSimon.setVisibility(View.GONE);
             gridNumeros.setVisibility(View.VISIBLE);
-            contenedorSecuencia.setVisibility(View.VISIBLE);
+            scrollSecuencia.setVisibility(View.VISIBLE);
             txtIndicadorColor.setVisibility(View.GONE);
+            contenedorCarrera.setVisibility(View.GONE);
         } else if (dificultadActual == Dificultad.DIFICIL) {
             gridSimon.setVisibility(View.VISIBLE);
             gridNumeros.setVisibility(View.GONE);
-            contenedorSecuencia.setVisibility(View.GONE);
+            scrollSecuencia.setVisibility(View.GONE);
             txtIndicadorColor.setVisibility(View.VISIBLE);
+            contenedorCarrera.setVisibility(View.VISIBLE);
             gridSimon.setBackgroundColor(Color.WHITE); 
         } else {
             gridSimon.setVisibility(View.VISIBLE);
             gridNumeros.setVisibility(View.GONE);
-            contenedorSecuencia.setVisibility(View.GONE);
+            scrollSecuencia.setVisibility(View.GONE);
             txtIndicadorColor.setVisibility(View.GONE);
+            contenedorCarrera.setVisibility(View.GONE);
             gridSimon.setBackgroundColor(Color.TRANSPARENT);
         }
     }
@@ -143,14 +254,15 @@ public class JuegoActivity extends AppCompatActivity {
         btnHome.setOnClickListener(v -> finish());
         btnSiguienteEtapa.setOnClickListener(v -> {
             btnSiguienteEtapa.setVisibility(View.GONE);
-            siguienteRondaSimon();
+            if (dificultadActual == Dificultad.FACIL) siguienteRondaSimon();
         });
         
         for (int i = 0; i < 4; i++) {
             final int posView = i;
             cuadrosSimon[i].setOnClickListener(v -> {
                 int colorIdx = mapaColores.get(posView);
-                manejarToqueSimon(colorIdx);
+                if (dificultadActual == Dificultad.DIFICIL) manejarToqueCarrera(colorIdx);
+                else manejarToqueSimon(colorIdx);
             });
         }
 
@@ -161,7 +273,7 @@ public class JuegoActivity extends AppCompatActivity {
                     avanzarSecuenciaNumeros();
                     return true;
                 } else {
-                    perder();
+                    intentarSeguirOPerder();
                     return true;
                 }
             }
@@ -173,24 +285,122 @@ public class JuegoActivity extends AppCompatActivity {
         juegoActivo = true;
         txtPuntaje.setText("0");
         btnPlay.setVisibility(View.GONE);
+        tiemposReaccion.clear();
         
-        // El usuario pidió que empiece con 20 segundos por ahora para todos los niveles
         if (tiempoConfiguradoIntent > 0) {
             tiempoTotalConfigurado = tiempoConfiguradoIntent;
         } else {
-            tiempoTotalConfigurado = 20000;
+            tiempoTotalConfigurado = (dificultadActual == Dificultad.FACIL || dificultadActual == Dificultad.MEDIO) ? 25000 : 20000;
         }
         
         tiempoRestanteGlobal = tiempoTotalConfigurado;
 
         if (dificultadActual == Dificultad.MEDIO) {
             iniciarNivelNumeros();
+        } else if (dificultadActual == Dificultad.DIFICIL) {
+            iniciarNivelCarreraStroop();
         } else {
             iniciarNivelSimon();
         }
     }
 
-    // --- LÓGICA NIVEL 2: NÚMEROS ---
+    private void actualizarInterfazVidas() {
+        layoutVidas.removeAllViews();
+        for (int i = 0; i < vidasRestantes; i++) {
+            ImageView corazon = new ImageView(this);
+            corazon.setImageResource(android.R.drawable.btn_star_big_on); 
+            corazon.setColorFilter(Color.RED);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(60, 60);
+            params.setMargins(5, 0, 5, 0);
+            corazon.setLayoutParams(params);
+            layoutVidas.addView(corazon);
+        }
+    }
+
+    private void registrarReaccion() {
+        if (momentoInicioEstimulo > 0) {
+            tiemposReaccion.add(System.currentTimeMillis() - momentoInicioEstimulo);
+        }
+    }
+
+    // --- LÓGICA NIVEL 3: CARRERA STROOP ---
+
+    private void iniciarNivelCarreraStroop() {
+        progresoCarrera = 0;
+        actualizarPosicionPelota();
+        shuffleGridSimon();
+        siguienteEstimuloCarrera();
+        iniciarTemporizadorGlobal();
+    }
+
+    private void siguienteEstimuloCarrera() {
+        colorObjetivoCarrera = random.nextInt(4);
+        mostrarEstimuloPalabra(colorObjetivoCarrera);
+        momentoInicioEstimulo = System.currentTimeMillis();
+        reiniciarTimeoutCarrera();
+    }
+
+    private void mostrarEstimuloPalabra(int idxTarget) {
+        String[] nombres = {"VERDE", "ROJO", "AMARILLO", "AZUL"};
+        int[] colores = {Color.GREEN, Color.RED, Color.YELLOW, Color.CYAN};
+        txtIndicadorColor.setTextColor(colores[idxTarget]);
+        int idxPalabra;
+        do { idxPalabra = random.nextInt(4); } while (idxPalabra == idxTarget); 
+        txtIndicadorColor.setText(nombres[idxPalabra]);
+    }
+
+    private void manejarToqueCarrera(int colorIdxTocado) {
+        if (!juegoActivo) return;
+
+        if (colorIdxTocado == colorObjetivoCarrera) {
+            registrarReaccion();
+            progresoCarrera++;
+            txtPuntaje.setText(String.valueOf(progresoCarrera));
+            if (progresoCarrera >= iteracionesParaGanar) {
+                detenerCarrera();
+                ganar();
+            } else {
+                shuffleGridSimon();
+                siguienteEstimuloCarrera();
+            }
+        } else {
+            if (progresoCarrera > 0) progresoCarrera--;
+            txtPuntaje.setText(String.valueOf(progresoCarrera));
+            actualizarPosicionPelota();
+            animarView(rootLayout); 
+            shuffleGridSimon();
+            siguienteEstimuloCarrera();
+        }
+    }
+
+    private void reiniciarTimeoutCarrera() {
+        if (runnableTimeoutCarrera != null) handlerCarrera.removeCallbacks(runnableTimeoutCarrera);
+        runnableTimeoutCarrera = () -> {
+            if (juegoActivo) {
+                if (progresoCarrera > 0) progresoCarrera--;
+                txtPuntaje.setText(String.valueOf(progresoCarrera));
+                actualizarPosicionPelota();
+                reiniciarTimeoutCarrera();
+            }
+        };
+        handlerCarrera.postDelayed(runnableTimeoutCarrera, 1500); 
+        actualizarPosicionPelota();
+    }
+
+    private void detenerCarrera() {
+        if (runnableTimeoutCarrera != null) handlerCarrera.removeCallbacks(runnableTimeoutCarrera);
+    }
+
+    private void actualizarPosicionPelota() {
+        float maxAncho = contenedorCarrera.getWidth() - pelotaCarrera.getWidth();
+        float paso = maxAncho / iteracionesParaGanar;
+        float nuevaX = progresoCarrera * paso;
+        ObjectAnimator animX = ObjectAnimator.ofFloat(pelotaCarrera, "translationX", pelotaCarrera.getTranslationX(), nuevaX);
+        animX.setDuration(200);
+        animX.start();
+    }
+
+    // --- LÓGICA NIVEL 2: NÚMEROS (CINTA DE CINE) ---
 
     private void iniciarNivelNumeros() {
         secuenciaNumeros.clear();
@@ -198,24 +408,36 @@ public class JuegoActivity extends AppCompatActivity {
         for (int i = 0; i < iteracionesParaGanar; i++) {
             secuenciaNumeros.add(random.nextInt(10));
         }
-        dibujarSecuenciaSuperior();
+        dibujarCintaCine();
         actualizarTableroNumeros();
+        momentoInicioEstimulo = System.currentTimeMillis();
         iniciarTemporizadorGlobal();
     }
 
-    private void dibujarSecuenciaSuperior() {
-        filaSecuencia1.removeAllViews();
-        filaSecuencia2.removeAllViews();
+    private void dibujarCintaCine() {
+        contenedorCintaCine.removeAllViews();
         for (int i = 0; i < iteracionesParaGanar; i++) {
             TextView tv = new TextView(this);
             tv.setText(String.valueOf(secuenciaNumeros.get(i)));
             tv.setTextColor(i == indiceActualSecuencia ? Color.YELLOW : Color.GRAY);
-            tv.setTextSize(20);
-            tv.setPadding(10, 5, 10, 5);
+            tv.setTextSize(34);
+            tv.setPadding(40, 10, 40, 10);
             tv.setTypeface(null, i == indiceActualSecuencia ? Typeface.BOLD : Typeface.NORMAL);
-            if (i < iteracionesParaGanar/2) filaSecuencia1.addView(tv);
-            else filaSecuencia2.addView(tv);
+            contenedorCintaCine.addView(tv);
         }
+        desplazarCinta();
+    }
+
+    private void desplazarCinta() {
+        handler.postDelayed(() -> {
+            if (indiceActualSecuencia < contenedorCintaCine.getChildCount()) {
+                View target = contenedorCintaCine.getChildAt(indiceActualSecuencia);
+                int scrollX = target.getLeft() - (scrollSecuencia.getWidth() / 2) + (target.getWidth() / 2);
+                ObjectAnimator animScroll = ObjectAnimator.ofInt(scrollSecuencia, "scrollX", scrollSecuencia.getScrollX(), scrollX);
+                animScroll.setDuration(300);
+                animScroll.start();
+            }
+        }, 100);
     }
 
     private void actualizarTableroNumeros() {
@@ -243,10 +465,14 @@ public class JuegoActivity extends AppCompatActivity {
         }
     }
 
-    private void manejarToqueNumero(int numeroTocado) {
+    private void manejarToqueNumero(int num) {
         if (!juegoActivo) return;
-        if (numeroTocado == secuenciaNumeros.get(indiceActualSecuencia)) avanzarSecuenciaNumeros();
-        else perder();
+        if (num == secuenciaNumeros.get(indiceActualSecuencia)) {
+            registrarReaccion();
+            avanzarSecuenciaNumeros();
+            momentoInicioEstimulo = System.currentTimeMillis();
+        }
+        else intentarSeguirOPerder();
     }
 
     private void avanzarSecuenciaNumeros() {
@@ -254,12 +480,17 @@ public class JuegoActivity extends AppCompatActivity {
         txtPuntaje.setText(String.valueOf(indiceActualSecuencia));
         if (indiceActualSecuencia >= iteracionesParaGanar) ganar();
         else {
-            dibujarSecuenciaSuperior();
+            for (int i = 0; i < contenedorCintaCine.getChildCount(); i++) {
+                TextView tv = (TextView) contenedorCintaCine.getChildAt(i);
+                tv.setTextColor(i == indiceActualSecuencia ? Color.YELLOW : Color.GRAY);
+                tv.setTypeface(null, i == indiceActualSecuencia ? Typeface.BOLD : Typeface.NORMAL);
+            }
+            desplazarCinta();
             actualizarTableroNumeros();
         }
     }
 
-    // --- LÓGICA NIVEL 1 y 3: SIMON ---
+    // --- LÓGICA NIVEL 1: SIMON ---
 
     private void iniciarNivelSimon() {
         secuenciaSimon.clear();
@@ -271,11 +502,11 @@ public class JuegoActivity extends AppCompatActivity {
 
     private void siguienteRondaSimon() {
         int limiteEtapa;
-        if (etapaActualSimon == 1) limiteEtapa = iteracionesParaGanar / 4;
-        else if (etapaActualSimon == 2) limiteEtapa = iteracionesParaGanar / 3;
-        else limiteEtapa = iteracionesParaGanar - (iteracionesParaGanar / 4) - (iteracionesParaGanar / 3);
+        if (etapaActualSimon == 1) limiteEtapa = 5;
+        else if (etapaActualSimon == 2) limiteEtapa = 12; // 5 + 7
+        else limiteEtapa = 20; // 12 + 8
         
-        if (secuenciaSimon.size() >= limiteEtapa) {
+        if (puntajeTotalSimon >= limiteEtapa) {
             secuenciaSimon.clear();
             etapaActualSimon++;
             if (etapaActualSimon > 3) { ganar(); return; }
@@ -290,12 +521,9 @@ public class JuegoActivity extends AppCompatActivity {
     private void pausarParaSiguienteEtapa() {
         cancelarTemporizador();
         if (dificultadActual == Dificultad.FACIL) {
+            if (etapaActualSimon == 2) tiempoTotalConfigurado = 30000; 
+            else if (etapaActualSimon == 3) tiempoTotalConfigurado = 33000;
             tiempoRestanteGlobal = tiempoTotalConfigurado; 
-        } else if (dificultadActual == Dificultad.DIFICIL) {
-            // Requerimiento: 10s más por etapa en fase 3 (Nivel 3)
-            tiempoTotalConfigurado += 10000;
-            if (tiempoTotalConfigurado > 30000) tiempoTotalConfigurado = 30000;
-            tiempoRestanteGlobal = tiempoTotalConfigurado;
         }
         btnSiguienteEtapa.setText("EMPEZAR ETAPA " + etapaActualSimon);
         btnSiguienteEtapa.setVisibility(View.VISIBLE);
@@ -305,29 +533,7 @@ public class JuegoActivity extends AppCompatActivity {
     private void actualizarEsteticaSimon() {
         int colorFondo = (etapaActualSimon == 1) ? Color.BLACK : (etapaActualSimon == 2) ? Color.parseColor("#1A1A1A") : Color.parseColor("#111111");
         rootLayout.setBackgroundColor(colorFondo);
-        if (dificultadActual == Dificultad.DIFICIL) {
-            gridSimon.setBackgroundColor(Color.WHITE);
-            shuffleGridSimon();
-        } else {
-            resetGridSimon();
-        }
-    }
-
-    private void shuffleGridSimon() {
-        Collections.shuffle(mapaColores);
-        for (int i = 0; i < 4; i++) {
-            int colorIdx = mapaColores.get(i);
-            cuadrosSimon[i].setBackgroundResource(simonResIds[colorIdx]);
-            // Etiquetas falsas
-            int labelIdx;
-            do { labelIdx = random.nextInt(4); } while (labelIdx == colorIdx);
-            cuadrosSimon[i].setText(simonNombres[labelIdx]);
-            cuadrosSimon[i].setTextColor(Color.WHITE); 
-            cuadrosSimon[i].setTypeface(null, Typeface.BOLD);
-            cuadrosSimon[i].setShadowLayer(5, 0, 0, Color.BLACK);
-            cuadrosSimon[i].setGravity(Gravity.CENTER);
-            cuadrosSimon[i].setTextSize(24);
-        }
+        resetGridSimon();
     }
 
     private void resetGridSimon() {
@@ -340,77 +546,88 @@ public class JuegoActivity extends AppCompatActivity {
         }
     }
 
+    private void shuffleGridSimon() {
+        Collections.shuffle(mapaColores);
+        for (int i = 0; i < 4; i++) {
+            int colorIdx = mapaColores.get(i);
+            cuadrosSimon[i].setBackgroundResource(simonResIds[colorIdx]);
+        }
+    }
+
     private void mostrarSecuenciaSimon() {
         mostrandoSecuenciaSimon = true;
         cancelarTemporizador();
         long tiempoEncendido = (etapaActualSimon == 1) ? 600 : (etapaActualSimon == 2) ? 450 : 300;
         long totalDelay = 500;
-        
         for (int i = 0; i < secuenciaSimon.size(); i++) {
             int idxTarget = secuenciaSimon.get(i);
-            handler.postDelayed(() -> {
-                if (dificultadActual == Dificultad.DIFICIL) {
-                    shuffleGridSimon();
-                    mostrarEstimuloPalabra(idxTarget);
-                } else {
-                    animarColor(idxTarget);
-                }
-            }, totalDelay);
+            handler.postDelayed(() -> animarColor(idxTarget), totalDelay);
             totalDelay += tiempoEncendido + 200;
         }
-        
         handler.postDelayed(() -> {
-            txtIndicadorColor.setText("");
             mostrandoSecuenciaSimon = false;
+            momentoInicioEstimulo = System.currentTimeMillis();
             iniciarTemporizadorGlobal();
         }, totalDelay);
     }
 
-    private void mostrarEstimuloPalabra(int idxTarget) {
-        String[] nombres = {"VERDE", "ROJO", "AMARILLO", "AZUL"};
-        int[] colores = {Color.GREEN, Color.RED, Color.YELLOW, Color.CYAN};
-        txtIndicadorColor.setTextColor(colores[idxTarget]);
-        int idxPalabra;
-        do { idxPalabra = random.nextInt(4); } while (idxPalabra == idxTarget); 
-        txtIndicadorColor.setText(nombres[idxPalabra]);
-    }
-
     private void manejarToqueSimon(int colorIdx) {
-        if (!juegoActivo || mostrandoSecuenciaSimon || btnSiguienteEtapa.getVisibility() == View.VISIBLE) return;
+        if (!juegoActivo || mostrandoSecuenciaSimon || btnSiguienteEtapa.getVisibility() == View.VISIBLE || layoutOverlayMensaje.getVisibility() == View.VISIBLE) return;
         
         int posView = mapaColores.indexOf(colorIdx);
         animarView(cuadrosSimon[posView]);
 
         entradaJugadorSimon.add(colorIdx);
         if (!entradaJugadorSimon.get(entradaJugadorSimon.size()-1).equals(secuenciaSimon.get(entradaJugadorSimon.size()-1))) {
-            perder();
+            intentarSeguirOPerder();
             return;
         }
+        
+        registrarReaccion();
+        momentoInicioEstimulo = System.currentTimeMillis();
+
         if (entradaJugadorSimon.size() == secuenciaSimon.size()) {
             puntajeTotalSimon++;
             txtPuntaje.setText(String.valueOf(puntajeTotalSimon));
             handler.postDelayed(this::siguienteRondaSimon, 700);
-        } else if (dificultadActual == Dificultad.DIFICIL) {
-            shuffleGridSimon();
         }
     }
 
     // --- UTILIDADES ---
 
+    private void intentarSeguirOPerder() {
+        if (vidasRestantes > 0) {
+            vidasRestantes--;
+            actualizarInterfazVidas();
+            Toast.makeText(this, "¡Vida perdida! Reiniciando nivel...", Toast.LENGTH_SHORT).show();
+            cancelarTemporizador();
+            detenerCarrera();
+            handler.removeCallbacksAndMessages(null);
+            iniciarJuego(); 
+        } else {
+            perder();
+        }
+    }
+
     private void ganar() {
         juegoActivo = false;
         cancelarTemporizador();
-        Toast.makeText(this, "¡NIVEL SUPERADO!", Toast.LENGTH_LONG).show();
-        btnPlay.setVisibility(View.VISIBLE);
-        txtIndicadorColor.setText("");
+        detenerCarrera();
+        if (dificultadActual == Dificultad.FACIL && MainActivity.nivelAlcanzado < 2) {
+            MainActivity.nivelAlcanzado = 2; vidasRestantes++;
+        } else if (dificultadActual == Dificultad.MEDIO && MainActivity.nivelAlcanzado < 3) {
+            MainActivity.nivelAlcanzado = 3; vidasRestantes++;
+        }
+        mostrarPantallaVictoriaVida();
     }
 
     private void perder() {
         juegoActivo = false;
         cancelarTemporizador();
-        Toast.makeText(this, "GAME OVER", Toast.LENGTH_SHORT).show();
-        btnPlay.setVisibility(View.VISIBLE);
-        txtIndicadorColor.setText("");
+        detenerCarrera();
+        MainActivity.nivelAlcanzado = 1;
+        vidasRestantes = 0;
+        mostrarPantallaPerderStats();
     }
 
     private void iniciarTemporizadorGlobal() {
@@ -424,7 +641,7 @@ public class JuegoActivity extends AppCompatActivity {
                 barraTiempoProgreso.setLayoutParams(p);
             }
             @Override
-            public void onFinish() { perder(); }
+            public void onFinish() { intentarSeguirOPerder(); }
         }.start();
     }
 
@@ -439,7 +656,5 @@ public class JuegoActivity extends AppCompatActivity {
         anim.start();
     }
 
-    private void animarColor(int idx) {
-        animarView(cuadrosSimon[idx]);
-    }
+    private void animarColor(int idx) { animarView(cuadrosSimon[idx]); }
 }
