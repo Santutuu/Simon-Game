@@ -226,6 +226,11 @@ public class JuegoActivity extends AppCompatActivity {
         int porcentaje = (puntaje * 100) / iteracionesParaGanar;
         txtStatPorcentaje.setText(String.format(Locale.getDefault(), "%d%%", porcentaje));
 
+        // Guardar Resultado en Manager
+        if (!dificultadActual.equals(Dificultad.ENTRENAMIENTO)) {
+            ResultadosManager.guardarResultado(this, puntaje, promedio);
+        }
+
         // Progreso Global
         int totalProgress = (MainActivity.nivelAlcanzado * 100) / 3;
         ProgressBar pb = layoutOverlayMensaje.findViewById(R.id.progressBarGlobal);

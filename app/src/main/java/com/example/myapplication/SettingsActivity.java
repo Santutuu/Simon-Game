@@ -1,16 +1,18 @@
 package com.example.myapplication;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SettingsActivity extends AppCompatActivity {
 
     private ImageButton btnBackHome;
     private TextView txtTimeValue;
+    private EditText etUsername;
     private int reactionTime = 30;
 
     @Override
@@ -20,12 +22,23 @@ public class SettingsActivity extends AppCompatActivity {
 
         btnBackHome = findViewById(R.id.btnBackHome);
         txtTimeValue = findViewById(R.id.txtTimeValue);
+        etUsername = findViewById(R.id.etUsername);
         ImageButton btnTimeMinus = findViewById(R.id.btnTimeMinus);
         ImageButton btnTimePlus = findViewById(R.id.btnTimePlus);
 
-        btnBackHome.setOnClickListener(v -> {
-            finish();
+        etUsername.setText(ResultadosManager.getUsuarioActual(this));
+        etUsername.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                ResultadosManager.setUsuarioActual(SettingsActivity.this, s.toString());
+            }
         });
+
+        btnBackHome.setOnClickListener(v -> finish());
 
         btnTimeMinus.setOnClickListener(v -> {
             if (reactionTime > 5) {
