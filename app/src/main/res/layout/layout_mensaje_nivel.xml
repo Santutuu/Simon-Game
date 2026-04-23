@@ -1,178 +1,226 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E6000000"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="24dp">
+    android:background="#E6000000">
 
-    <ImageView
-        android:id="@+id/imgIconoMensaje"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginBottom="16dp"
-        android:visibility="gone"
-        android:contentDescription="@null" />
-
-    <TextView
-        android:id="@+id/txtMensajeTitulo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="GAME OVER"
-        android:textColor="#F4E04D"
-        android:textSize="40sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/txtMensajeDescripcion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:text="¡No te rindas! Aquí están tus resultados:"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp" />
+    <!-- Icono Home arriba a la izquierda -->
+    <ImageButton
+        android:id="@+id/btnHomeOverlay"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_home"
+        android:scaleType="centerInside"
+        android:contentDescription="Ir al menú" />
 
     <LinearLayout
-        android:id="@+id/layoutScoreMensaje"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <ImageView
+            android:id="@+id/imgIconoMensaje"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone"
+            android:contentDescription="@null" />
 
         <TextView
+            android:id="@+id/txtMensajeTitulo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SCORE"
+            android:text="GAME OVER"
             android:textColor="#F4E04D"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textSize="40sp"
+            android:textStyle="bold"
+            android:gravity="center" />
 
         <TextView
-            android:id="@+id/txtScoreValue"
+            android:id="@+id/txtMensajeDescripcion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="¡No te rindas! Aquí están tus resultados:"
             android:textColor="#FFFFFF"
-            android:textSize="48sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/contenedorEstadisticas"
-        android:layout_width="260dp"
-        android:layout_height="260dp"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/bg_stats_circle">
+            android:textSize="16sp" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:id="@+id/layoutScoreMensaje"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
             android:gravity="center"
             android:orientation="vertical">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/txtLabelScore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:text="SCORE"
+                android:textColor="#F4E04D"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/txtStatReaccion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0.0s"
-                    android:textColor="#FFFFFF"
-                    android:textSize="44sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="REACCIÓN"
-                    android:textColor="#F4E04D"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="160dp"
-                android:layout_height="1dp"
-                android:layout_marginVertical="20dp"
-                android:background="#33F4E04D" />
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/txtScoreValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/txtStatPorcentaje"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0%"
-                    android:textColor="#FFFFFF"
-                    android:textSize="44sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="COMPLETADO"
-                    android:textColor="#F4E04D"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                android:text="0"
+                android:textColor="#FFFFFF"
+                android:textSize="64sp"
+                android:textStyle="bold" />
         </LinearLayout>
-    </FrameLayout>
 
-    <LinearLayout
-        android:id="@+id/layoutProgresoGlobal"
-        android:layout_width="220dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <ProgressBar
-            android:id="@+id/progressBarGlobal"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="8dp"
-            android:progress="65"
-            android:progressDrawable="@drawable/bg_barra_tiempo_progreso" />
-
-        <TextView
+        <LinearLayout
+            android:id="@+id/layoutMejorPuntaje"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="65% TOTAL"
-            android:textColor="#99FFFFFF"
-            android:textSize="10sp" />
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MEJOR PUNTAJE"
+                android:textColor="#F4E04D"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtMejorPuntajeValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textColor="#FFFFFF"
+                android:textSize="48sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/contenedorEstadisticas"
+            android:layout_width="260dp"
+            android:layout_height="260dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/bg_stats_circle">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtStatReaccion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0.0s"
+                        android:textColor="#FFFFFF"
+                        android:textSize="44sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="REACCIÓN"
+                        android:textColor="#F4E04D"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="160dp"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="20dp"
+                    android:background="#33F4E04D" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtStatPorcentaje"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0%"
+                        android:textColor="#FFFFFF"
+                        android:textSize="44sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="COMPLETADO"
+                        android:textColor="#F4E04D"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutProgresoGlobal"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:id="@+id/progressBarGlobal"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:progress="65"
+                android:progressDrawable="@drawable/bg_barra_tiempo_progreso" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="65% TOTAL"
+                android:textColor="#99FFFFFF"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnEntendido"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:backgroundTint="#F4E04D"
+            android:text="REINTENTAR"
+            android:textColor="#000000"
+            android:textStyle="bold" />
+
+        <!-- Se oculta el botón de texto del menú principal -->
+        <TextView
+            android:id="@+id/btnMenuPrincipal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:padding="8dp"
+            android:text="MENU PRINCIPAL"
+            android:textColor="#66FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btnEntendido"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:backgroundTint="#F4E04D"
-        android:text="REINTENTAR"
-        android:textColor="#000000"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/btnMenuPrincipal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:padding="8dp"
-        android:text="MENU PRINCIPAL"
-        android:textColor="#66FFFFFF"
-        android:textSize="12sp"
-        android:textStyle="bold" />
-
-</LinearLayout>
+</RelativeLayout>

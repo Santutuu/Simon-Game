@@ -13,6 +13,7 @@ public class ResultadosManager {
     private static final String PREFS_NAME = "SimonGamePrefs";
     private static final String KEY_RESULTADOS = "lista_resultados";
     private static final String KEY_USUARIO_ACTUAL = "usuario_actual";
+    private static final String KEY_BEST_TRAINING = "best_training_score";
 
     public static void guardarResultado(Context context, int puntaje, double reaccionMedia) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -29,7 +30,6 @@ public class ResultadosManager {
             return Double.compare(r1.getReaccionMedia(), r2.getReaccionMedia());
         });
 
-        // Guardar solo los top 10 o similar si se desea, por ahora todos
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(KEY_RESULTADOS, new Gson().toJson(resultados));
         editor.apply();
@@ -52,5 +52,18 @@ public class ResultadosManager {
     public static String getUsuarioActual(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .getString(KEY_USUARIO_ACTUAL, "Jugador");
+    }
+
+    public static int getBestTrainingScore(Context context) {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .getInt(KEY_BEST_TRAINING, 0);
+    }
+
+    public static void updateBestTrainingScore(Context context, int score) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        int currentBest = prefs.getInt(KEY_BEST_TRAINING, 0);
+        if (score > currentBest) {
+            prefs.edit().putInt(KEY_BEST_TRAINING, score).apply();
+        }
     }
 }

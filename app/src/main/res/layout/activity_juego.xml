@@ -135,7 +135,7 @@
         </GridLayout>
 
         <LinearLayout
-            android:id="@+id/barraTiempoFondo"
+            android:id="@+id/contenedorBarraTiempo"
             android:layout_width="300dp"
             android:layout_height="24dp"
             android:layout_marginTop="32dp"
