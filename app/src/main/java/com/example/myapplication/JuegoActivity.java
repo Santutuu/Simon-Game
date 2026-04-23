@@ -86,6 +86,7 @@ public class JuegoActivity extends AppCompatActivity {
 
     // Elementos para Niveles Simon
     private GridLayout gridSimon, gridNumeros;
+    private View contenedorGridSimon;
     private final List<Integer> secuenciaSimon = new ArrayList<>();
     private final List<Integer> entradaJugadorSimon = new ArrayList<>();
     private int puntajeTotalSimon = 0;
@@ -150,6 +151,7 @@ public class JuegoActivity extends AppCompatActivity {
         pelotaCarrera = findViewById(R.id.pelotaCarrera);
         gridSimon = findViewById(R.id.gridSimon);
         gridNumeros = findViewById(R.id.gridNumeros);
+        contenedorGridSimon = findViewById(R.id.contenedorGridSimon);
         btnCentroSimon = findViewById(R.id.btnCentroSimon);
 
         layoutOverlayMensaje = getLayoutInflater().inflate(R.layout.layout_mensaje_nivel, null);
@@ -313,12 +315,14 @@ public class JuegoActivity extends AppCompatActivity {
         btnCentroSimon.setVisibility(dificultadActual == Dificultad.INVERSO ? View.VISIBLE : View.GONE);
 
         if (dificultadActual == Dificultad.MEDIO) {
+            contenedorGridSimon.setVisibility(View.GONE);
             gridSimon.setVisibility(View.GONE);
             gridNumeros.setVisibility(View.VISIBLE);
             scrollSecuencia.setVisibility(View.VISIBLE);
             txtIndicadorColor.setVisibility(View.GONE);
             contenedorCarrera.setVisibility(View.GONE);
         } else if (dificultadActual == Dificultad.DIFICIL) {
+            contenedorGridSimon.setVisibility(View.VISIBLE);
             gridSimon.setVisibility(View.VISIBLE);
             gridNumeros.setVisibility(View.GONE);
             scrollSecuencia.setVisibility(View.GONE);
@@ -326,6 +330,7 @@ public class JuegoActivity extends AppCompatActivity {
             contenedorCarrera.setVisibility(View.VISIBLE);
             gridSimon.setBackgroundColor(Color.WHITE); 
         } else {
+            contenedorGridSimon.setVisibility(View.VISIBLE);
             gridSimon.setVisibility(View.VISIBLE);
             gridNumeros.setVisibility(View.GONE);
             scrollSecuencia.setVisibility(View.GONE);

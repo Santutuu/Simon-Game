@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         Button btnComenzar = findViewById(R.id.btnComenzarJuego);
         ImageButton btnSettings = findViewById(R.id.btnSettings);
         ImageButton btnTrophy = findViewById(R.id.btnTrophy);
-        ImageButton btnStats = findViewById(R.id.btnStats);
 
         layoutFacil.setOnClickListener(v -> seleccionarNivel("FACIL"));
         
@@ -66,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
 
         btnSettings.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, SettingsActivity.class)));
         btnTrophy.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, MejoresResultadosActivity.class)));
-        btnStats.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, EstadisticasActivity.class)));
     }
 
     @Override
