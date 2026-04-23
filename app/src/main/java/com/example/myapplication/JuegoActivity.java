@@ -97,6 +97,12 @@ public class JuegoActivity extends AppCompatActivity {
     private long tiempoEncendidoEntrenamiento = 800;
     private final long LIMITE_VELOCIDAD = 150;
 
+    // Modo Reacción Inversa
+    private View btnCentroSimon;
+    private boolean estimuloInversoActivo = false;
+    private Runnable runnableAutoAvanceInverso;
+    private final List<Boolean> pasosInversos = new ArrayList<>();
+
     private final Random random = new Random();
     private final Handler handler = new Handler(Looper.getMainLooper());
 
@@ -144,6 +150,7 @@ public class JuegoActivity extends AppCompatActivity {
         pelotaCarrera = findViewById(R.id.pelotaCarrera);
         gridSimon = findViewById(R.id.gridSimon);
         gridNumeros = findViewById(R.id.gridNumeros);
+        btnCentroSimon = findViewById(R.id.btnCentroSimon);
 
         layoutOverlayMensaje = getLayoutInflater().inflate(R.layout.layout_mensaje_nivel, null);
         addContentView(layoutOverlayMensaje, new RelativeLayout.LayoutParams(
@@ -182,6 +189,9 @@ public class JuegoActivity extends AppCompatActivity {
         } else if (dificultadActual == Dificultad.DIFICIL) {
             txtMensajeTitulo.setText("NIVEL 3: REACCIÓN");
             txtMensajeDescripcion.setText("¡Rápido! Toca el color de la TINTA de la palabra.");
+        } else if (dificultadActual == Dificultad.INVERSO) {
+            txtMensajeTitulo.setText("MODO INVERSO");
+            txtMensajeDescripcion.setText("Simon tradicional, pero si un color brilla junto al centro GRIS... ¡NO TOQUES!");
         }
 
         btnEntendido.setOnClickListener(v -> {
@@ -239,7 +249,7 @@ public class JuegoActivity extends AppCompatActivity {
         layoutOverlayMensaje.findViewById(R.id.layoutProgresoGlobal).setVisibility(View.VISIBLE);
 
         int puntaje = 0;
-        if (dificultadActual == Dificultad.FACIL || dificultadActual == Dificultad.ENTRENAMIENTO) puntaje = puntajeTotalSimon;
+        if (dificultadActual == Dificultad.FACIL || dificultadActual == Dificultad.ENTRENAMIENTO || dificultadActual == Dificultad.INVERSO) puntaje = puntajeTotalSimon;
         else if (dificultadActual == Dificultad.MEDIO) puntaje = indiceActualSecuencia;
         else if (dificultadActual == Dificultad.DIFICIL) puntaje = progresoCarrera;
         
@@ -290,7 +300,7 @@ public class JuegoActivity extends AppCompatActivity {
             catch (Exception e) { dificultadActual = Dificultad.FACIL; }
         }
 
-        if (dificultadActual == Dificultad.ENTRENAMIENTO) {
+        if (dificultadActual == Dificultad.ENTRENAMIENTO || dificultadActual == Dificultad.INVERSO) {
             if (contenedorBarraTiempo != null) contenedorBarraTiempo.setVisibility(View.GONE);
             else barraTiempoProgreso.setVisibility(View.GONE);
             layoutVidas.setVisibility(View.GONE);
@@ -299,6 +309,8 @@ public class JuegoActivity extends AppCompatActivity {
             else barraTiempoProgreso.setVisibility(View.VISIBLE);
             layoutVidas.setVisibility(View.VISIBLE);
         }
+
+        btnCentroSimon.setVisibility(dificultadActual == Dificultad.INVERSO ? View.VISIBLE : View.GONE);
 
         if (dificultadActual == Dificultad.MEDIO) {
             gridSimon.setVisibility(View.GONE);
@@ -376,6 +388,8 @@ public class JuegoActivity extends AppCompatActivity {
             iniciarNivelCarreraStroop();
         } else if (dificultadActual == Dificultad.ENTRENAMIENTO) {
             iniciarNivelEntrenamiento();
+        } else if (dificultadActual == Dificultad.INVERSO) {
+            iniciarNivelInverso();
         } else {
             iniciarNivelSimon();
         }
@@ -383,7 +397,7 @@ public class JuegoActivity extends AppCompatActivity {
 
     private void actualizarInterfazVidas() {
         layoutVidas.removeAllViews();
-        if (dificultadActual == Dificultad.ENTRENAMIENTO) return;
+        if (dificultadActual == Dificultad.ENTRENAMIENTO || dificultadActual == Dificultad.INVERSO) return;
         for (int i = 0; i < vidasRestantes; i++) {
             ImageView corazon = new ImageView(this);
             corazon.setImageResource(android.R.drawable.btn_star_big_on); 
@@ -399,6 +413,95 @@ public class JuegoActivity extends AppCompatActivity {
         if (momentoInicioEstimulo > 0) {
             tiemposReaccion.add(System.currentTimeMillis() - momentoInicioEstimulo);
         }
+    }
+
+    // --- LÓGICA MODO INVERSO ---
+
+    private void iniciarNivelInverso() {
+        secuenciaSimon.clear();
+        pasosInversos.clear();
+        puntajeTotalSimon = 0;
+        tiempoEncendidoEntrenamiento = 800;
+        siguienteRondaInverso();
+    }
+
+    private void siguienteRondaInverso() {
+        if (!juegoActivo) return;
+        entradaJugadorSimon.clear();
+        secuenciaSimon.add(random.nextInt(4));
+        pasosInversos.add(random.nextInt(100) < 25); // 25% de prob de ser inverso
+        mostrarSecuenciaSimonInverso();
+    }
+
+    private void mostrarSecuenciaSimonInverso() {
+        mostrandoSecuenciaSimon = true;
+        btnCentroSimon.setBackgroundResource(R.drawable.bg_simon_centro_3d);
+        estimuloInversoActivo = false;
+
+        long totalDelay = 500;
+        for (int i = 0; i < secuenciaSimon.size(); i++) {
+            final int idx = i;
+            final int colorIdx = secuenciaSimon.get(i);
+            handler.postDelayed(() -> {
+                animarColor(colorIdx);
+                if (pasosInversos.get(idx)) {
+                    btnCentroSimon.setBackgroundResource(R.drawable.bg_simon_centro_gris_3d);
+                    handler.postDelayed(() -> btnCentroSimon.setBackgroundResource(R.drawable.bg_simon_centro_3d), tiempoEncendidoEntrenamiento);
+                }
+            }, totalDelay);
+            totalDelay += tiempoEncendidoEntrenamiento + 200;
+        }
+
+        handler.postDelayed(() -> {
+            mostrandoSecuenciaSimon = false;
+            momentoInicioEstimulo = System.currentTimeMillis();
+            verificarPasoInversoInput();
+        }, totalDelay);
+    }
+
+    private void verificarPasoInversoInput() {
+        if (!juegoActivo || dificultadActual != Dificultad.INVERSO) return;
+
+        int idxActual = entradaJugadorSimon.size();
+        if (idxActual < pasosInversos.size() && pasosInversos.get(idxActual)) {
+            // Delay para confundir al usuario (300ms a 600ms)
+            long confusionDelay = 300 + random.nextInt(300);
+            handler.postDelayed(() -> {
+                if (!juegoActivo) return;
+                
+                // Paso inverso detectado: el usuario debe esperar
+                estimuloInversoActivo = true;
+                btnCentroSimon.setBackgroundResource(R.drawable.bg_simon_centro_gris_3d);
+                
+                runnableAutoAvanceInverso = () -> {
+                    if (juegoActivo && estimuloInversoActivo) {
+                        estimuloInversoActivo = false;
+                        btnCentroSimon.setBackgroundColor(Color.WHITE); // Titila en blanco
+                        handler.postDelayed(() -> {
+                            btnCentroSimon.setBackgroundResource(R.drawable.bg_simon_centro_3d);
+                            entradaJugadorSimon.add(-1); // Marcamos el paso como completado (esperado)
+                            
+                            if (entradaJugadorSimon.size() == secuenciaSimon.size()) {
+                                completarRondaInverso();
+                            } else {
+                                verificarPasoInversoInput();
+                            }
+                        }, 300);
+                    }
+                };
+                handler.postDelayed(runnableAutoAvanceInverso, 1500);
+            }, confusionDelay);
+        } else {
+            estimuloInversoActivo = false;
+            btnCentroSimon.setBackgroundResource(R.drawable.bg_simon_centro_3d);
+        }
+    }
+
+    private void completarRondaInverso() {
+        puntajeTotalSimon++;
+        txtPuntaje.setText(String.valueOf(puntajeTotalSimon));
+        if (tiempoEncendidoEntrenamiento > LIMITE_VELOCIDAD) tiempoEncendidoEntrenamiento -= 20;
+        handler.postDelayed(this::siguienteRondaInverso, 700);
     }
 
     // --- LÓGICA NIVEL 3: CARRERA STROOP ---
@@ -652,18 +755,27 @@ public class JuegoActivity extends AppCompatActivity {
         handler.postDelayed(() -> {
             mostrandoSecuenciaSimon = false;
             momentoInicioEstimulo = System.currentTimeMillis();
-            if (dificultadActual != Dificultad.ENTRENAMIENTO) iniciarTemporizadorGlobal();
+            if (dificultadActual != Dificultad.ENTRENAMIENTO && dificultadActual != Dificultad.INVERSO) iniciarTemporizadorGlobal();
         }, totalDelay);
     }
 
     private void manejarToqueSimon(int colorIdx) {
         if (!juegoActivo || mostrandoSecuenciaSimon || btnSiguienteEtapa.getVisibility() == View.VISIBLE || layoutOverlayMensaje.getVisibility() == View.VISIBLE) return;
         
+        if (dificultadActual == Dificultad.INVERSO) {
+            if (estimuloInversoActivo) { // El usuario tocó cuando debía esperar
+                if (runnableAutoAvanceInverso != null) handler.removeCallbacks(runnableAutoAvanceInverso);
+                intentarSeguirOPerder();
+                return;
+            }
+        }
+
         int posView = mapaColores.indexOf(colorIdx);
         animarView(cuadrosSimon[posView]);
 
         entradaJugadorSimon.add(colorIdx);
-        if (!entradaJugadorSimon.get(entradaJugadorSimon.size()-1).equals(secuenciaSimon.get(entradaJugadorSimon.size()-1))) {
+        int currentIdx = entradaJugadorSimon.size() - 1;
+        if (!entradaJugadorSimon.get(currentIdx).equals(secuenciaSimon.get(currentIdx))) {
             intentarSeguirOPerder();
             return;
         }
@@ -680,8 +792,17 @@ public class JuegoActivity extends AppCompatActivity {
                     tiempoEncendidoEntrenamiento -= 20;
                 }
                 handler.postDelayed(this::siguienteRondaEntrenamiento, 700);
+            } else if (dificultadActual == Dificultad.INVERSO) {
+                if (tiempoEncendidoEntrenamiento > LIMITE_VELOCIDAD) {
+                    tiempoEncendidoEntrenamiento -= 20;
+                }
+                handler.postDelayed(this::siguienteRondaInverso, 700);
             } else {
                 handler.postDelayed(this::siguienteRondaSimon, 700);
+            }
+        } else {
+            if (dificultadActual == Dificultad.INVERSO) {
+                verificarPasoInversoInput();
             }
         }
     }
@@ -706,7 +827,7 @@ public class JuegoActivity extends AppCompatActivity {
     // --- UTILIDADES ---
 
     private void intentarSeguirOPerder() {
-        if (dificultadActual != Dificultad.ENTRENAMIENTO && vidasRestantes > 0) {
+        if (dificultadActual != Dificultad.ENTRENAMIENTO && dificultadActual != Dificultad.INVERSO && vidasRestantes > 0) {
             vidasRestantes--;
             actualizarInterfazVidas();
             Toast.makeText(this, "¡Vida perdida! Reiniciando nivel...", Toast.LENGTH_SHORT).show();
@@ -735,7 +856,7 @@ public class JuegoActivity extends AppCompatActivity {
         juegoActivo = false;
         cancelarTemporizador();
         detenerCarrera();
-        if (dificultadActual != Dificultad.ENTRENAMIENTO) {
+        if (dificultadActual != Dificultad.ENTRENAMIENTO && dificultadActual != Dificultad.INVERSO) {
             MainActivity.nivelAlcanzado = 1;
             vidasRestantes = 0;
         }

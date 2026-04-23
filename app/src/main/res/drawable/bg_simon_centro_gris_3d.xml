@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Sombra/Borde exterior -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#4A4A4A" />
+        </shape>
+    </item>
+
+    <!-- Cuerpo del botón con gradiente para efecto 3D -->
+    <item android:bottom="4dp" android:left="2dp" android:right="2dp" android:top="2dp">
+        <shape android:shape="oval">
+            <gradient
+                android:angle="270"
+                android:startColor="#D3D3D3"
+                android:endColor="#808080" />
+            <stroke
+                android:width="2dp"
+                android:color="#E0E0E0" />
+        </shape>
+    </item>
+
+    <!-- Brillo superior -->
+    <item android:bottom="15dp" android:left="10dp" android:right="10dp" android:top="5dp">
+        <shape android:shape="oval">
+            <solid android:color="#40FFFFFF" />
+        </shape>
+    </item>
+</layer-list>
