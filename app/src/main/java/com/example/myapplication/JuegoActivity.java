@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -157,6 +159,8 @@ public class JuegoActivity extends AppCompatActivity {
         layoutOverlayMensaje.setVisibility(View.VISIBLE);
         imgIconoMensaje.setVisibility(View.GONE);
         contenedorEstadisticas.setVisibility(View.GONE);
+        layoutOverlayMensaje.findViewById(R.id.layoutScoreMensaje).setVisibility(View.GONE);
+        layoutOverlayMensaje.findViewById(R.id.layoutProgresoGlobal).setVisibility(View.GONE);
         btnEntendido.setText("¡EMPEZAR!");
 
         if (dificultadActual == Dificultad.FACIL) {
@@ -178,40 +182,60 @@ public class JuegoActivity extends AppCompatActivity {
 
     private void mostrarPantallaVictoriaVida() {
         layoutOverlayMensaje.setVisibility(View.VISIBLE);
-        contenedorEstadisticas.setVisibility(View.GONE);
-        txtMensajeTitulo.setText("¡NIVEL SUPERADO!");
-        txtMensajeDescripcion.setText("¡Excelente trabajo! Has ganado un corazón extra.");
+        actualizarOverlayConResultados("¡NIVEL SUPERADO!", "¡Excelente trabajo! Has ganado un corazón extra.");
         imgIconoMensaje.setVisibility(View.VISIBLE);
         imgIconoMensaje.setImageResource(android.R.drawable.btn_star_big_on);
-        imgIconoMensaje.setColorFilter(Color.RED);
+        imgIconoMensaje.setColorFilter(Color.YELLOW);
         btnEntendido.setText("VOLVER AL MENÚ");
         btnEntendido.setOnClickListener(v -> finish());
     }
 
     private void mostrarPantallaPerderStats() {
         layoutOverlayMensaje.setVisibility(View.VISIBLE);
+        actualizarOverlayConResultados("GAME OVER", "¡No te rindas! Aquí están tus resultados:");
         imgIconoMensaje.setVisibility(View.GONE);
-        txtMensajeTitulo.setText("GAME OVER");
-        txtMensajeDescripcion.setText("¡No te rindas! Aquí están tus resultados:");
+        btnEntendido.setText("REINTENTAR");
+        btnEntendido.setOnClickListener(v -> {
+            layoutOverlayMensaje.setVisibility(View.GONE);
+            iniciarJuego();
+        });
+    }
+
+    private void actualizarOverlayConResultados(String titulo, String desc) {
+        txtMensajeTitulo.setText(titulo);
+        txtMensajeDescripcion.setText(desc);
         
+        layoutOverlayMensaje.findViewById(R.id.layoutScoreMensaje).setVisibility(View.VISIBLE);
         contenedorEstadisticas.setVisibility(View.VISIBLE);
-        
-        // Calcular promedio
+        layoutOverlayMensaje.findViewById(R.id.layoutProgresoGlobal).setVisibility(View.VISIBLE);
+
+        // Score
+        int puntaje = 0;
+        if (dificultadActual == Dificultad.FACIL) puntaje = puntajeTotalSimon;
+        else if (dificultadActual == Dificultad.MEDIO) puntaje = indiceActualSecuencia;
+        else if (dificultadActual == Dificultad.DIFICIL) puntaje = progresoCarrera;
+        ((TextView)layoutOverlayMensaje.findViewById(R.id.txtScoreValue)).setText(String.valueOf(puntaje));
+
+        // Reacción
         long suma = 0;
         for (Long t : tiemposReaccion) suma += t;
         double promedio = tiemposReaccion.isEmpty() ? 0 : (suma / (double) tiemposReaccion.size()) / 1000.0;
         txtStatReaccion.setText(String.format(Locale.getDefault(), "%.1fs", promedio));
 
-        // Calcular porcentaje
-        int porcentaje = 0;
-        if (dificultadActual == Dificultad.FACIL) porcentaje = (puntajeTotalSimon * 100) / iteracionesParaGanar;
-        else if (dificultadActual == Dificultad.MEDIO) porcentaje = (indiceActualSecuencia * 100) / iteracionesParaGanar;
-        else if (dificultadActual == Dificultad.DIFICIL) porcentaje = (progresoCarrera * 100) / iteracionesParaGanar;
-        
+        // Porcentaje Nivel
+        int porcentaje = (puntaje * 100) / iteracionesParaGanar;
         txtStatPorcentaje.setText(String.format(Locale.getDefault(), "%d%%", porcentaje));
 
-        btnEntendido.setText("VOLVER AL MENÚ");
-        btnEntendido.setOnClickListener(v -> finish());
+        // Progreso Global
+        int totalProgress = (MainActivity.nivelAlcanzado * 100) / 3;
+        ProgressBar pb = layoutOverlayMensaje.findViewById(R.id.progressBarGlobal);
+        pb.setProgress(totalProgress);
+
+        View progLayout = layoutOverlayMensaje.findViewById(R.id.layoutProgresoGlobal);
+        for(int i=0; i<((LinearLayout)progLayout).getChildCount(); i++){
+            View child = ((LinearLayout)progLayout).getChildAt(i);
+            if(child instanceof TextView) ((TextView)child).setText(totalProgress + "% TOTAL");
+        }
     }
 
     private void recibirConfiguracion() {

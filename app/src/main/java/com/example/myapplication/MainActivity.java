@@ -14,8 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static int nivelAlcanzado = 1; 
-    private int ultimoNivelRegistrado = 1;
+    public static int nivelAlcanzado = 5; // Desbloqueado temporalmente para ver todos los niveles
+    private int ultimoNivelRegistrado = 5;
     private String dificultadSeleccionada = "FACIL";
     private LinearLayout layoutFacil, layoutMedio, layoutDificil, layoutEntrenamiento, layoutInverso;
 
@@ -55,8 +55,8 @@ public class MainActivity extends AppCompatActivity {
             else mostrarBloqueado();
         });
 
-        layoutEntrenamiento.setOnClickListener(v -> mostrarBloqueado());
-        layoutInverso.setOnClickListener(v -> mostrarBloqueado());
+        layoutEntrenamiento.setOnClickListener(v -> seleccionarNivel("ENTRENAMIENTO"));
+        layoutInverso.setOnClickListener(v -> seleccionarNivel("INVERSO"));
 
         btnComenzar.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, JuegoActivity.class);
@@ -87,8 +87,8 @@ public class MainActivity extends AppCompatActivity {
         layoutFacil.setAlpha(1.0f);
         layoutMedio.setAlpha(nivelAlcanzado >= 2 ? 1.0f : 0.4f);
         layoutDificil.setAlpha(nivelAlcanzado >= 3 ? 1.0f : 0.4f);
-        layoutEntrenamiento.setAlpha(0.4f);
-        layoutInverso.setAlpha(0.4f);
+        layoutEntrenamiento.setAlpha(nivelAlcanzado >= 4 ? 1.0f : 0.4f);
+        layoutInverso.setAlpha(nivelAlcanzado >= 5 ? 1.0f : 0.4f);
         
         if (dificultadSeleccionada.equals("MEDIO") && nivelAlcanzado < 2) seleccionarNivel("FACIL");
         if (dificultadSeleccionada.equals("DIFICIL") && nivelAlcanzado < 3) seleccionarNivel("FACIL");
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void animarDesbloqueo(int nivel) {
         actualizarInterfazNiveles();
-        View viewAAnimar = (nivel == 2) ? layoutMedio : (nivel == 3) ? layoutDificil : null;
+        View viewAAnimar = (nivel == 2) ? layoutMedio : (nivel == 3) ? layoutDificil : (nivel == 4) ? layoutEntrenamiento : (nivel == 5) ? layoutInverso : null;
         
         if (viewAAnimar != null) {
             viewAAnimar.setAlpha(1.0f);

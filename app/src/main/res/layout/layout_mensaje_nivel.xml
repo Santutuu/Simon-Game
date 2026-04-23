@@ -7,11 +7,19 @@
     android:orientation="vertical"
     android:padding="24dp">
 
+    <ImageView
+        android:id="@+id/imgIconoMensaje"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        android:contentDescription="@null" />
+
     <TextView
         android:id="@+id/txtMensajeTitulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="NIVEL 1"
+        android:text="GAME OVER"
         android:textColor="#F4E04D"
         android:textSize="40sp"
         android:textStyle="bold" />
@@ -20,39 +28,66 @@
         android:id="@+id/txtMensajeDescripcion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:gravity="center"
-        android:text="Memoriza la secuencia de colores."
+        android:text="¡No te rindas! Aquí están tus resultados:"
         android:textColor="#FFFFFF"
-        android:textSize="20sp" />
+        android:textSize="16sp" />
 
-    <ImageView
-        android:id="@+id/imgIconoMensaje"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+    <LinearLayout
+        android:id="@+id/layoutScoreMensaje"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:visibility="gone"
-        android:src="@drawable/ic_pelota" />
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SCORE"
+            android:textColor="#F4E04D"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtScoreValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="#FFFFFF"
+            android:textSize="48sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/contenedorEstadisticas"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="260dp"
+        android:layout_height="260dp"
         android:layout_marginTop="24dp"
-        android:visibility="gone">
+        android:background="@drawable/bg_stats_circle">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:gravity="center"
-                android:layout_marginEnd="32dp">
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txtStatReaccion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0.0s"
+                    android:textColor="#FFFFFF"
+                    android:textSize="44sp"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -60,51 +95,84 @@
                     android:textColor="#F4E04D"
                     android:textSize="12sp"
                     android:textStyle="bold" />
-                <TextView
-                    android:id="@+id/txtStatReaccion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0.0s"
-                    android:textColor="#FFFFFF"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
             </LinearLayout>
+
+            <View
+                android:layout_width="160dp"
+                android:layout_height="1dp"
+                android:layout_marginVertical="20dp"
+                android:background="#33F4E04D" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="PROGRESO"
-                    android:textColor="#F4E04D"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                android:gravity="center"
+                android:orientation="vertical">
+
                 <TextView
                     android:id="@+id/txtStatPorcentaje"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0%"
                     android:textColor="#FFFFFF"
-                    android:textSize="24sp"
+                    android:textSize="44sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="COMPLETADO"
+                    android:textColor="#F4E04D"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
             </LinearLayout>
-
         </LinearLayout>
     </FrameLayout>
 
+    <LinearLayout
+        android:id="@+id/layoutProgresoGlobal"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/progressBarGlobal"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:progress="65"
+            android:progressDrawable="@drawable/bg_barra_tiempo_progreso" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="65% TOTAL"
+            android:textColor="#99FFFFFF"
+            android:textSize="10sp" />
+    </LinearLayout>
+
     <Button
         android:id="@+id/btnEntendido"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="#F4E04D"
+        android:text="REINTENTAR"
+        android:textColor="#000000"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/btnMenuPrincipal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:backgroundTint="#F4E04D"
-        android:paddingStart="40dp"
-        android:paddingEnd="40dp"
-        android:text="ENTENDIDO"
-        android:textColor="#000000"
+        android:layout_marginTop="16dp"
+        android:padding="8dp"
+        android:text="MENU PRINCIPAL"
+        android:textColor="#66FFFFFF"
+        android:textSize="12sp"
         android:textStyle="bold" />
 
 </LinearLayout>
