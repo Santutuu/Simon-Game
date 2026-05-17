@@ -206,23 +206,10 @@
             android:id="@+id/btnTrophy"
             android:layout_width="64dp"
             android:layout_height="56dp"
-            android:layout_marginEnd="20dp"
             android:background="@drawable/bg_modo_boton"
             android:backgroundTint="@color/btn_icon_bg"
             android:elevation="4dp"
             android:src="@drawable/ic_trophy"
-            android:padding="12dp"
-            android:scaleType="fitCenter"
-            app:tint="@color/black" />
-
-        <ImageButton
-            android:id="@+id/btnStats"
-            android:layout_width="64dp"
-            android:layout_height="56dp"
-            android:background="@drawable/bg_modo_boton"
-            android:backgroundTint="@color/btn_icon_bg"
-            android:elevation="4dp"
-            android:src="@drawable/ic_stats"
             android:padding="12dp"
             android:scaleType="fitCenter"
             app:tint="@color/black" />
